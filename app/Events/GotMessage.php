@@ -2,11 +2,13 @@
 
 namespace App\Events;
 
+use App\Models\Message;
 use Illuminate\Broadcasting\Channel;
 use Illuminate\Broadcasting\InteractsWithSockets;
 use Illuminate\Broadcasting\PresenceChannel;
 use Illuminate\Broadcasting\PrivateChannel;
 use Illuminate\Contracts\Broadcasting\ShouldBroadcast;
+use Illuminate\Contracts\Broadcasting\ShouldBroadcastNow;
 use Illuminate\Foundation\Events\Dispatchable;
 use Illuminate\Queue\SerializesModels;
 
@@ -14,12 +16,19 @@ class GotMessage implements ShouldBroadcast
 {
     use Dispatchable, InteractsWithSockets, SerializesModels;
 
+    public $senderUsername;
+
     /**
      * Create a new event instance.
      */
-    public function __construct(public array $message)
+    public function __construct(public string $message, public int $senderId, public string $receiverId)
     {
-        //
+        $message = Message::create([
+            'sender_id' => $senderId,
+            'receiver_id' => $receiverId,
+            'message' => $message,
+        ]);
+        $this->senderUsername = $message->sender->name;
     }
 
     /**
@@ -30,7 +39,7 @@ class GotMessage implements ShouldBroadcast
     public function broadcastOn(): array
     {
         return [
-            new PrivateChannel('all_users_channel'),
+            new Channel('all_users_channel'),
         ];
     }
 }

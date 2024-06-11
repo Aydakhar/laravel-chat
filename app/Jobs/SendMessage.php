@@ -3,7 +3,6 @@
 namespace App\Jobs;
 
 use App\Events\GotMessage;
-use App\Models\Message;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
@@ -17,7 +16,7 @@ class SendMessage implements ShouldQueue
     /**
      * Create a new job instance.
      */
-    public function __construct(public Message $message)
+    public function __construct(public string $message, public int $senderId, public int $receiverId)
     {
         //
     }
@@ -27,12 +26,10 @@ class SendMessage implements ShouldQueue
      */
     public function handle(): void
     {
-        GotMessage::dispatch([
-            'id' => $this->message->id,
-            'sender_id' => $this->message->sender_id,
-            'receiver_id' => $this->message->receiver_id,
-            'message' => $this->message->message,
-            'time' => $this->message->time
-        ]);
+        GotMessage::dispatch(
+            $this->message,
+            $this->senderId,
+            $this->receiverId
+        );
     }
 }
