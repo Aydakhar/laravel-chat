@@ -11,28 +11,34 @@ class ChatComponent extends Component
 {
     public string $message = '';
     public $history;
+    public $user;
 
     public function sendMessage(): void
     {
-        SendMessage::dispatch($this->message, auth()->id(), auth()->id());
+        SendMessage::dispatch($this->message, auth()->id(), $this->user->id);
         $this->message = '';
     }
 
     public function mount(): void
     {
-//        $messages = Message::where('sender_id', auth()->id())->orWhere('receiver_id', auth()->id())->get();
-        $messages = Message::all();
+        $messages = Message::where('sender_id', auth()->id())->orWhere('receiver_id', auth()->id())->get();
+//        $messages = Message::get();
         $this->history = $messages->map(function ($message) {
            return [
                'senderUsername' => $message->sender->name,
-               'message' => $message->message
+               'message' => $message->message,
+               'outgoing' => $message->sender->id === auth()->id()
            ];
         });
     }
 
     #[On('echo:all_users_channel,GotMessage')]
     public function listenForMessageEvents($data) {
-        $this->history[] = ['senderUsername' => $data['senderUsername'], 'message' => $data['message']];
+        $this->history[] = [
+            'senderUsername' => $data['senderUsername'],
+            'message' => $data['message'],
+            'outgoing' => $data['senderId'] === auth()->id()
+        ];
     }
 
     public function render()
