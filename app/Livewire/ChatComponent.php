@@ -22,12 +22,12 @@ class ChatComponent extends Component
     public function mount(): void
     {
         $messages = Message::where('sender_id', auth()->id())->orWhere('receiver_id', auth()->id())->get();
-//        $messages = Message::get();
         $this->history = $messages->map(function ($message) {
            return [
                'senderUsername' => $message->sender->name,
                'message' => $message->message,
-               'outgoing' => $message->sender->id === auth()->id()
+               'outgoing' => $message->sender->id === auth()->id(),
+               'time' => $message->created_at->diffForHumans(),
            ];
         });
     }
@@ -37,7 +37,8 @@ class ChatComponent extends Component
         $this->history[] = [
             'senderUsername' => $data['senderUsername'],
             'message' => $data['message'],
-            'outgoing' => $data['senderId'] === auth()->id()
+            'outgoing' => $data['senderId'] === auth()->id(),
+            'time' => $data['time'],
         ];
     }
 

@@ -29,6 +29,7 @@ class GotMessage implements ShouldBroadcast
             'message' => $message,
         ]);
         $this->senderUsername = $message->sender->name;
+        $this->time = $message->created_at->diffForHumans();
     }
 
     /**
