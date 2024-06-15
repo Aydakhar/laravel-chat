@@ -21,7 +21,9 @@ class ChatComponent extends Component
 
     public function mount(): void
     {
-        $messages = Message::where('sender_id', auth()->id())->orWhere('receiver_id', auth()->id())->get();
+        $messages = Message::where([['sender_id', '=', auth()->id()], ['receiver_id', '=', $this->user->id]])
+            ->orWhere([['receiver_id', '=', auth()->id()], ['sender_id', '=', $this->user->id]])
+            ->get();
         $this->history = $messages->map(function ($message) {
            return [
                'senderUsername' => $message->sender->name,
