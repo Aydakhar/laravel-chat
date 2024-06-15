@@ -3,9 +3,7 @@
 use App\Models\User;
 use Illuminate\Support\Facades\Route;
 
-Route::view('/', 'welcome');
-
-Route::get('dashboard', function() {
+Route::get('/', function() {
     $users = User::whereNot('id', auth()->id())->get();
     return view('dashboard', ['users' => $users]);
 })->middleware(['auth', 'verified'])->name('dashboard');
