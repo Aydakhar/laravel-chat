@@ -14,7 +14,7 @@ Route::view('profile', 'profile')
 
 Route::get('chat/{user?}', function(?User $user = null) {
     return view('chat', ['user' => $user]);
-})->middleware(['auth', 'verified'])->name('chat');
+})->whereNumber('user')->middleware(['auth', 'verified'])->name('chat');
 
 Route::redirect('/home', '/');
 
