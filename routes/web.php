@@ -3,18 +3,20 @@
 use App\Models\User;
 use Illuminate\Support\Facades\Route;
 
-Route::get('/', function() {
-    $users = User::whereNot('id', auth()->id())->get();
-    return view('dashboard', ['users' => $users]);
-})->middleware(['auth', 'verified'])->name('dashboard');
-
 Route::view('profile', 'profile')
     ->middleware(['auth'])
     ->name('profile');
 
-Route::get('chat/{user?}', function(?User $user = null) {
-    return view('chat', ['user' => $user]);
-})->whereNumber('user')->middleware(['auth', 'verified'])->name('chat');
+Route::middleware(['auth', 'verified'])->group(function() {
+    Route::get('/', function() {
+        $users = User::whereNot('id', auth()->id())->get();
+        return view('dashboard', ['users' => $users]);
+    })->name('dashboard');
+
+    Route::get('chat/{user?}', function(?User $user = null) {
+        return view('chat', ['user' => $user]);
+    })->whereNumber('user')->name('chat');
+});
 
 Route::redirect('/home', '/');
 
