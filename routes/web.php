@@ -16,4 +16,6 @@ Route::get('chat/{user?}', function(?User $user = null) {
     return view('chat', ['user' => $user]);
 })->middleware(['auth', 'verified'])->name('chat');
 
+Route::redirect('/home', '/');
+
 require __DIR__.'/auth.php';
